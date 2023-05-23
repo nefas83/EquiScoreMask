@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ergebnisse</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        //var socket = io.connect('http://' + document.domain + ':' + location.port);
+        var socket = io.connect('http://127.0.0.1:5000');
+
+        var updating = false;
+
+        socket.on('data_updated', function() {
+        updating = true;
+
+        $.getJSON('/data', function(data) {
+            var tableBody = $('#results-table-body');
+
+            // Update the table with the new data
+            $.each(data, function(i, competition) {
+                $.each(competition.Competitors, function(j, competitor) {
+                    var row = tableBody.find('#row-' + parseInt(competitor.id));
+                    if (row.length === 0) {
+                        // The row does not exist, create a new one
+                        row = $('<tr>').attr('id', 'row-' + parseInt(competitor.id));
+                        tableBody.append(row);
+                    }
+
+                    // Update the row data
+                    row.empty();
+                    row.append($('<td>').addClass('name')
+                        .append($('<div>').addClass('name').text(competitor.rank))
+                    );
+                    row.append($('<td>').addClass('name')
+                        .append($('<div>').addClass('name').text(competitor.fullName))
+                        .append($('<div>').addClass('verein').text(competitor.orgName))
+                        .append($('<img>').addClass('flag-icon').attr('src', competitor.flag_image))
+                    );
+
+                    var dressageResultsTable = $('<table>');
+                    dressageResultsTable.append($('<thead>'));
+                    dressageResultsTable.append($('<tr>')
+                        .append($('<th>').text("Judge"))
+                        .append($('<th>').text("Score"))
+                        .append($('<th>').text("Rank")));
+                    $.each(competitor.DressageResults, function(k, result) {
+                        dressageResultsTable.append($('<tr>')
+                            .append($('<td>').text(result.judgeBy))
+                            .append($('<td>').text(result.score))
+                            .append($('<td>').text(result.rank))
+                        );
+                    });
+                    row.append($('<td>').append(dressageResultsTable));
+
+                    var totalResultsTable = $('<table>');
+                    $.each(competitor.TotalResults, function(k, result) {
+                        totalResultsTable.append($('<tr>')
+                            .append($('<td>').text(result.score))
+                            .append($('<td>').text(result.penaltyPoints))
+                        );
+                    });
+                    row.append($('<td>').append(totalResultsTable));
+
+                    var gespanne = $.map(competitor.Gespanne, function(horse) {
+                        return horse.HorseName + ' (' + horse.bornYear + ', ' + horse.sex + ')';
+                    }).join(', ');
+                    row.append($('<td>').text(gespanne));
+                });
+            });
+            updating = false;
+        });
+    });
+
+
+        // Ringpuffer für Tabellenzeilen
+        function rotateTableRows() {
+            if (!updating) {
+                const tableBody = document.getElementById('results-table-body');
+                const firstRow = tableBody.firstElementChild;
+                const clonedRow = firstRow.cloneNode(true);
+                tableBody.appendChild(clonedRow);
+                tableBody.removeChild(firstRow);
+            }
+        }
+
+        // Alle 2 Sekunden Tabellenzeilen drehen
+        setInterval(rotateTableRows, 5000);
+
+    </script>
+</head>
+<body>
+    <div class="banner">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+    </div>
+    <h1>Ergebnisse - {{ data[0].name }} # {{ data[0].classNumber }}</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th class="rank">Rank</th>
+                    <th>Full Name</th>
+                    <th>Dressage Results</th>
+                    <th>Total Results</th>
+                    <th>Gespanne</th>
+                </tr>
+            </thead>
+            <tbody id="results-table-body">
+                {% for competition in data %}
+                {% for competitor in competition.Competitors %}
+                <tr id="row-{{ competitor.id }}">
+                    <td class="name">
+                        <div class="name">{{ competitor.rank }}</div>
+                    </td>
+                    <td class="name">
+                        <div class="name">{{ competitor.fullName }}</div>
+                        <div class="verein">{{ competitor.orgName }}</div>
+                        <img class="flag-icon" src="{{ competitor.flag_image }}" alt=Flag>
+                    </td>
+                    <td>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Judge</th>
+                                    <th>Score</th>
+                                    <th>Rank</th>
+                                </tr>
+                            </thead>
+                            {% for result in competitor.DressageResults %}
+                            <tr>
+                                <td>{{ result.judgeBy }}</td>
+                                <td>{{ result.score }}</td>
+                                <td>{{ result.rank }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                    <td>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Score</th>
+                                    <th>Penalty Points</th>
+                                </tr>
+                            </thead>
+                            {% for result in competitor.TotalResults %}
+                            <tr>
+                                <td>{{ result.score }}</td>
+                                <td>{{ result.penaltyPoints }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                    <td class="name">
+                        {% for horse in competitor.Gespanne %}
+                        <div class="name">{{ horse.HorseName }} ({{ horse.bornYear }}, {{ horse.sex }})</div>,
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

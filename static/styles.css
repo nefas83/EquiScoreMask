@@ -1,0 +1,130 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    overflow: hidden;
+    max-height: calc(100vh - 20px); /* Maximale Höhe des Browserfensters abzüglich 20px */
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.8em;
+}
+
+.table-container {
+    overflow-y: auto;
+    max-height: 100vh; /* Maximale Höhe des Browserfensters */
+}
+
+#results-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;  /* Hintergrundfarbe für gerade Zeilen */
+}
+
+@keyframes scrollTable {
+    0% {
+      transform: translateY(0);  /* Startposition */
+    }
+    100% {
+      transform: translateY(-100%);  /* Endposition (oben) */
+    }
+}
+
+#results-table tbody {
+    display: block;  /* Tabelle als Blockelement anzeigen */
+    animation: scrollTable 2s linear infinite;  /* Scrollen alle 2 Sekunden */
+  }
+
+
+
+table thead {
+    background-color: #2196f3;  /* Ändere die Farbe nach Bedarf */
+    color: white;
+}
+
+/* Tabellenkopf */
+thead {
+    position: sticky;
+    top: 0;
+    background-color: #2196f3; /* Blaue Hintergrundfarbe für Kopfzeile */
+    color: #fff;
+  }
+
+td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+th {
+    background-color: #A7C7E7;
+    color: black;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+th.rank {
+    width: 100px;
+}
+
+/* Tabellenzellen */
+td span {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+
+td.name div.name { 
+    font-size: 24px;
+    font-weight: bold;
+}
+td.name div.verein { 
+    font-size: smaller;
+}
+
+tr:hover {
+    background-color: #f0f0f0;
+}
+
+
+/* Anpassung für die Flaggen */
+.flag-icon {
+    font-size: 24px;
+    margin: auto;
+}
+
+  table td span.flag-icon {
+    font-size: 24px;  /* Ändere die Größe nach Bedarf */
+}
+
+.banner {
+    text-align: center;
+    height: 150px;
+    background-color: #ffffff; /* Weißer Hintergrund */
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1); /* Schatten */
+    border-radius: 10px; /* Abgerundete Ecken */
+    padding: 20px; /* Innenabstand */
+    margin-bottom: 20px; /* Abstand nach unten */
+}
+
+.banner img {
+    max-height: 100%;
+}
