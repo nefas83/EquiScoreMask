@@ -17,6 +17,39 @@ from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
 
+# ======== FUNCTIONS ========
+# Load the flags.json file
+
+
+def get_flag_image(code, _flags):
+    """
+    Returns the flag image URL for a given country code.
+
+    Parameters
+    ----------
+    code : str
+        The ISO 3166-1 alpha-2 country code.
+    flags : list
+        A list of dictionaries representing the flag data.
+
+    Returns
+    -------
+    str
+        The URL of the flag image corresponding to the country code.
+        If no match is found, an empty string is returned.
+    """
+    for flag in _flags:
+        if flag['code'] == code:
+            return flag['image']
+    return ''
+
+
+# Lade die flags.json-Datei
+with open('static/flags.json', 'r', encoding='utf-8') as f:
+    flags = json.load(f)
+# ===========================
+# ===========================
+
 # ======== CLASSES ========
 class XMLData:
     """
@@ -186,46 +219,13 @@ class FileChangeHandler(FileSystemEventHandler):
 
 # ======== VARIABLES ========
 xml_data = XMLData('data/equiscore.xml')
-data = []
+#data = []
 
 app = Flask(__name__)
 app.debug = True
 bootstrap = Bootstrap(app)
 socketio = SocketIO(app, cors_allowed_origins='*',
                     logger=True, engineio_logger=True)
-# ===========================
-# ===========================
-
-# ======== FUNCTIONS ========
-# Load the flags.json file
-
-
-def get_flag_image(code, flags):
-    """
-    Returns the flag image URL for a given country code.
-
-    Parameters
-    ----------
-    code : str
-        The ISO 3166-1 alpha-2 country code.
-    flags : list
-        A list of dictionaries representing the flag data.
-
-    Returns
-    -------
-    str
-        The URL of the flag image corresponding to the country code.
-        If no match is found, an empty string is returned.
-    """
-    for flag in flags:
-        if flag['code'] == code:
-            return flag['image']
-    return ''
-
-
-# Lade die flags.json-Datei
-with open('static/flags.json', 'r', encoding='utf-8') as f:
-    flags = json.load(f)
 # ===========================
 # ===========================
 
