@@ -66,19 +66,25 @@
                         );
                     });
                     row.append($('<td>').append(totalResultsTable));
+                    
+                        var gespanne = $.map(competitor.Gespanne, function(horse) {
+                            return '<div class="horse">' + horse.HorseName + ' (' + horse.bornYear + ', ' + horse.sex + ')' + '</div>';
+                        }).join('');
+                        row.append($('<td>').addClass('name')
+                            .append($('<div>').addClass('name').html(gespanne))
+                        );
 
-                    var gespanne = $.map(competitor.Gespanne, function(horse) {
-                        return horse.HorseName + ' (' + horse.bornYear + ', ' + horse.sex + ')';
-                    }).join(', ');
-                    row.append($('<td>').addClass('name')
-                        .append($('<div>').addClass('name').text(gespanne))
-                    );
+                    //var gespanne = $.map(competitor.Gespanne, function(horse) {
+                    //    return horse.HorseName + ' (' + horse.bornYear + ', ' + horse.sex + ')';
+                    //}).join(', ');
+                    //row.append($('<td>').addClass('name')
+                     //   .append($('<div>').addClass('name').text(gespanne))
+                    //);
                 });
             });
             updating = false;
         });
     });
-
 
         // Ringpuffer für Tabellenzeilen
         function rotateTableRows() {
