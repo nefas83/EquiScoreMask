@@ -82,16 +82,16 @@ class XMLData:
         """
         Parses the XML file and returns a list of dictionaries representing the competition results.
 
-        The XML file is expected to have a specific structure with 
-        'TResultsProvider' elements containing the competition 
-        details and nested 'Officials' and 'Competitors' elements containing the details 
-        of the officials and competitors 
+        The XML file is expected to have a specific structure with 'TResultsProvider' elements 
+        containing the competition 
+        details and nested 'Officials' and 'Competitors' elements containing the details of 
+        the officials and competitors 
         respectively.
 
         Returns
         -------
         list
-            A list of dictionaries where each dictionary represents a competition and contains
+            A list of dictionaries where each dictionary represents a competition and contains 
             the details of the competition,
             the officials, and the competitors.
         """
@@ -100,77 +100,163 @@ class XMLData:
         data = []
 
         for item in root.findall('TResultsProvider'):
-            competition = {
-                'mId': item.find('mId').text,
-                'identifier': item.find('identifier').text,
-                'orgId': item.find('orgId').text,
-                'name': item.find('name').text,
-                'startTime': item.find('startTime').text,
-                'classNumber': item.find('classNumber').text,
-                'Officials': [],
-                'Competitors': []
-            }
-
-            for official in item.findall('Officials/o'):
-                competition['Officials'].append({
-                    'judgeBy': official.find('judgeBy').text,
-                    'fullName': official.find('fullName').text,
-                })
-
-                competitors = []
-                for competitor in item.findall('Competitors/o'):
-                    dressage_results = []
-                    total_results = []
-
-                    country_code_node = competitor.find('country')
-                    if country_code_node is not None:
-                        country_code = country_code_node.text
-                        flag_image = get_flag_image(country_code, flags)
-
-                    results_node = competitor.find('Results')
-                    if results_node is not None:
-                        for result in results_node.iter('o'):
-                            result_item_type_node = result.find(
-                                'resultItemType')
-                            if result_item_type_node is not None:
-                                if result_item_type_node.text == 'ritDressage':
-                                    dressage_results.append({
-                                        'resultItemType': result_item_type_node.text,
-                                        'judgeBy': result.find('judgeBy').text,
-                                        'score': result.find('score').text,
-                                        'procent': result.find('procent').text,
-                                        'rank': result.find('rank').text if result.find('rank') is not None else 'N/A',
-                                    })
-
-                                elif result_item_type_node.text == 'ritDressageTotal':
-                                    total_results.append({
-                                        'resultItemType': result_item_type_node.text,
-                                        'score': result.find('score').text,
-                                        'procent': result.find('procent').text,
-                                        'penaltyPoints': result.find('penaltyPoints').text,
-                                    })
-
-                    competitors.append({
-                        'id': competitor.find('id').text,
-                        'startingNumber': competitor.find('startingNumber').text,
-                        'rank': competitor.find('rank').text if competitor.find('rank') is not None else 'N/A',
-                        'fullName': competitor.find('fullName').text,
-                        'orgName': competitor.find('orgName').text,
-                        'flag_image': flag_image,
-                        'DressageResults': dressage_results,
-                        'TotalResults': total_results,
-                        'Gespanne': [{
-                            'HorseName': horse.find('HorseName').text,
-                            'bornYear': horse.find('bornYear').text,
-                            'sex': horse.find('sex').text
-                        } for horse in competitor.find('Gespanne').iter('o')],
-                    })
-
-            competition['Competitors'] = sorted(competitors, key=lambda x: int(
-                x['rank']) if x['rank'].isdigit() else float('inf'))
+            competition = self.create_competition(item)
             data.append(competition)
 
         return data
+
+    def create_competition(self, item):
+        """
+        Creates a dictionary representing a competition from an XML element.
+
+        Parameters
+        ----------
+        item : xml.etree.ElementTree.Element
+            An XML element representing a competition.
+
+        Returns
+        -------
+        dict
+            A dictionary representing the competition.
+        """
+        competition = {
+            'mId': item.find('mId').text,
+            'identifier': item.find('identifier').text,
+            'orgId': item.find('orgId').text,
+            'name': item.find('name').text,
+            'startTime': item.find('startTime').text,
+            'classNumber': item.find('classNumber').text,
+            'Officials': self.create_officials(item),
+            'Competitors': self.create_competitors(item)
+        }
+        competition['Competitors'] = sorted(
+            competition['Competitors'],
+            key=lambda x: int(x['rank']) if x['rank'].isdigit() else float('inf')
+        )
+        return competition
+
+    def create_officials(self, item):
+        """
+        Creates a list of dictionaries representing officials from an XML element.
+
+        Parameters
+        ----------
+        item : xml.etree.ElementTree.Element
+            An XML element representing a competition.
+
+        Returns
+        -------
+        list
+            A list of dictionaries where each dictionary represents an official.
+        """
+        officials = []
+        for official in item.findall('Officials/o'):
+            officials.append({
+                'judgeBy': official.find('judgeBy').text,
+                'fullName': official.find('fullName').text,
+            })
+        return officials
+
+    def create_competitors(self, item):
+        """
+        Creates a list of dictionaries representing competitors from an XML element.
+
+        Parameters
+        ----------
+        item : xml.etree.ElementTree.Element
+            An XML element representing a competition.
+
+        Returns
+        -------
+        list
+            A list of dictionaries where each dictionary represents a competitor.
+        """
+        competitors = []
+        for competitor in item.findall('Competitors/o'):
+            competitor_dict = self.create_competitor(competitor)
+            competitors.append(competitor_dict)
+        return competitors
+
+    def create_competitor(self, competitor):
+        """
+        Creates a dictionary representing a competitor from an XML element.
+
+        Parameters
+        ----------
+        competitor : xml.etree.ElementTree.Element
+            An XML element representing a competitor.
+
+        Returns
+        -------
+        dict
+            A dictionary representing the competitor.
+        """
+        dressage_results = []
+        total_results = []
+        country_code_node = competitor.find('country')
+        flag_image = ''
+        if country_code_node is not None:
+            country_code = country_code_node.text
+            flag_image = get_flag_image(country_code, flags)
+        results_node = competitor.find('Results')
+        if results_node is not None:
+            dressage_results, total_results = self.create_results(results_node)
+        competitor_dict = {
+            'id': competitor.find('id').text,
+            'startingNumber': competitor.find('startingNumber').text,
+            'rank': competitor.find('rank').text if competitor.find('rank') is not None else 'N/A',
+            'fullName': competitor.find('fullName').text,
+            'orgName': competitor.find('orgName').text,
+            'flag_image': flag_image,
+            'DressageResults': dressage_results,
+            'TotalResults': total_results,
+            'Gespanne': [{
+                'HorseName': horse.find('HorseName').text,
+                'bornYear': horse.find('bornYear').text,
+                'sex': horse.find('sex').text
+            } for horse in competitor.find('Gespanne').iter('o')],
+        }
+        return competitor_dict
+
+    def create_results(self, results_node):
+        """
+        Creates lists of dictionaries representing dressage results and total results from
+        an XML element.
+
+        Parameters
+        ----------
+        results_node : xml.etree.ElementTree.Element
+            An XML element representing the results of a competitor.
+
+        Returns
+        -------
+        list, list
+            Two lists of dictionaries where each dictionary represents a result. The first list 
+            represents the dressage results 
+            and the second list represents the total results.
+        """
+        dressage_results = []
+        total_results = []
+        for result in results_node.iter('o'):
+            result_item_type_node = result.find('resultItemType')
+            if result_item_type_node is not None:
+                if result_item_type_node.text == 'ritDressage':
+                    dressage_results.append({
+                        'resultItemType': result_item_type_node.text,
+                        'judgeBy': result.find('judgeBy').text,
+                        'score': result.find('score').text,
+                        'procent': result.find('procent').text,
+                        'rank': result.find('rank').text if result.find('rank') is not None
+                                else 'N/A',
+                    })
+                elif result_item_type_node.text == 'ritDressageTotal':
+                    total_results.append({
+                        'resultItemType': result_item_type_node.text,
+                        'score': result.find('score').text,
+                        'procent': result.find('procent').text,
+                        'penaltyPoints': result.find('penaltyPoints').text,
+                    })
+        return dressage_results, total_results
 
     def reload_data(self):
         """
