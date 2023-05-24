@@ -55,6 +55,7 @@ Enjoy using EquiScoreMask!
 
 ## Support
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/gilbertrau)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W8LKVL0)
 
 --- 
 
@@ -119,3 +120,4 @@ Dieses Projekt ist unter der GNU v3-Lizenz lizenziert. Weitere Informationen fin
 
 ## Support
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/gilbertrau)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W8LKVL0)
