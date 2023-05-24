@@ -77,7 +77,8 @@ class XMLData:
     create_competitor(competitor)
         Creates a dictionary representing a competitor from an XML element.
     create_results(results_node)
-        Creates lists of dictionaries representing dressage results and total results from an XML element.
+        Creates lists of dictionaries representing dressage results and total results
+        from an XML element.
     reload_data()
         Reloads the data from the XML file.
     get_data()
