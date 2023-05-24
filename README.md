@@ -7,7 +7,7 @@ EquiScoremask is a Python application developed to display competition results f
 - Python 3.x
 - Flask 2.3.2
 - Flask-Bootstrap 3.3.7.1
-- python-socketio 5.8.0
+- Flask-SocketIO 5.3.4
 - watchdog 3.0.0
 
 ## Installation
@@ -68,7 +68,7 @@ EquiScoremask ist eine Python-Anwendung, die Ergebnisse von Reitwettbewerben anz
 - Python 3.x
 - Flask 2.3.2
 - Flask-Bootstrap 3.3.7.1
-- python-socketio 5.8.0
+- Flask-SocketIO 5.3.4
 - watchdog 3.0.0
 
 ## Installation
