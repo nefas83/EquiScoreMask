@@ -55,6 +55,10 @@
                     row.append($('<td>').append(dressageResultsTable));
 
                     var totalResultsTable = $('<table>');
+                    totalResultsTable.append($('<thead>'));
+                    totalResultsTable.append($('<tr>')
+                        .append($('<th>').text("Score"))
+                        .append($('<th>').text("Penalty Points")));
                     $.each(competitor.TotalResults, function(k, result) {
                         totalResultsTable.append($('<tr>')
                             .append($('<td>').text(result.score))
@@ -66,7 +70,9 @@
                     var gespanne = $.map(competitor.Gespanne, function(horse) {
                         return horse.HorseName + ' (' + horse.bornYear + ', ' + horse.sex + ')';
                     }).join(', ');
-                    row.append($('<td>').text(gespanne));
+                    row.append($('<td>').addClass('name')
+                        .append($('<div>').addClass('name').text(gespanne))
+                    );
                 });
             });
             updating = false;
