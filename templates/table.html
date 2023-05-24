@@ -7,8 +7,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-        //var socket = io.connect('http://' + document.domain + ':' + location.port);
-        var socket = io.connect('http://127.0.0.1:5000');
+        var socket = io.connect(window.location.protocol + '//' + window.location.hostname + ':' + location.port);
+
 
         var updating = false;
 
@@ -73,13 +73,6 @@
                         row.append($('<td>').addClass('name')
                             .append($('<div>').addClass('name').html(gespanne))
                         );
-
-                    //var gespanne = $.map(competitor.Gespanne, function(horse) {
-                    //    return horse.HorseName + ' (' + horse.bornYear + ', ' + horse.sex + ')';
-                    //}).join(', ');
-                    //row.append($('<td>').addClass('name')
-                     //   .append($('<div>').addClass('name').text(gespanne))
-                    //);
                 });
             });
             updating = false;
