@@ -68,6 +68,16 @@ class XMLData:
     -------
     parse_xml()
         Parses the XML file and returns a list of dictionaries representing the competition results.
+    create_competition(item)
+        Creates a dictionary representing a competition from an XML element.
+    create_officials(item)
+        Creates a list of dictionaries representing officials from an XML element.
+    create_competitors(item)
+        Creates a list of dictionaries representing competitors from an XML element.
+    create_competitor(competitor)
+        Creates a dictionary representing a competitor from an XML element.
+    create_results(results_node)
+        Creates lists of dictionaries representing dressage results and total results from an XML element.
     reload_data()
         Reloads the data from the XML file.
     get_data()
